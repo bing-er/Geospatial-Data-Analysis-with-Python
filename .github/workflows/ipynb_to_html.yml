@@ -1,0 +1,27 @@
+name: Convert Jupyter Notebooks to HTML
+
+on:
+  push:
+    branches:
+      - build
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: |
+          pip install nbconvert
+
+      - name: Convert notebooks to HTML
+        run: |
+          jupyter nbconvert --to html notebooks/*.ipynb --output-dir notebooks/
+
