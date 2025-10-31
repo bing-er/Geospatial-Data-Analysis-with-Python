@@ -11,7 +11,7 @@ permissions:
   id-token: write
 
 concurrency:
-  group: "pages"
+  group: pages
   cancel-in-progress: true
 
 jobs:
@@ -28,20 +28,28 @@ jobs:
 
       - name: Install deps
         run: |
-          pip install --upgrade pip
+          python -m pip install --upgrade pip
           pip install jupyter nbconvert nbformat
 
-      - name: Convert notebook → HTML into /docs as index.html
+      - name: Convert notebook → HTML in /docs as index.html
         run: |
           mkdir -p docs
           touch docs/.nojekyll
           jupyter nbconvert --to html "notebooks/Geospatial Data Analysis.ipynb" \
             --output-dir docs --output index
+          # Append a Back-to-Repo link to the bottom
+          cat >> docs/index.html <<'EOF'
+          <hr>
+          <p style="text-align:center;margin-top:16px">
+            <a href="https://github.com/bing-er/Geospatial-Data-Analysis-with-Python"
+               style="font-size:16px;text-decoration:none;">⬅ Back to Repository</a>
+          </p>
+          EOF
           ls -lah docs
 
       - name: Commit generated site files
         run: |
-          git config user.name "github-actions"
+          git config user.name "actions-user"
           git config user.email "actions@github.com"
           git add docs/index.html docs/.nojekyll
           git commit -m "Auto-publish notebook to GitHub Pages (index.html)" || echo "No changes"
