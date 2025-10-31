@@ -1,5 +1,0 @@
-- name: Convert notebook to HTML (homepage)
-  run: |
-    mkdir -p docs
-    jupyter nbconvert --to html "notebooks/Geospatial Data Analysis.ipynb" \
-      --output-dir docs --output index

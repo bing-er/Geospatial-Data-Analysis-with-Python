@@ -1,0 +1,46 @@
+name: Publish notebook as GitHub Pages
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: write      # allow committing /docs
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install deps
+        run: |
+          pip install --upgrade pip
+          pip install jupyter nbconvert nbformat
+
+      - name: Convert notebook → HTML into /docs as index.html
+        run: |
+          mkdir -p docs
+          jupyter nbconvert --to html "notebooks/Geospatial Data Analysis.ipynb" \
+            --output-dir docs --output index
+
+      - name: Commit generated site files
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add docs/index.html
+          git commit -m "Auto-publish notebook to GitHub Pages" || echo "No changes"
+          git push
