@@ -5,7 +5,3 @@
 
 🔗 **Project URL:**  
 👉 [https://bing-er.github.io/Geospatial-Data-Analysis-with-Python/](https://bing-er.github.io/Geospatial-Data-Analysis-with-Python/)
-
----
-
-> This project is automatically built and published from the latest Jupyter Notebook using GitHub Actions.
