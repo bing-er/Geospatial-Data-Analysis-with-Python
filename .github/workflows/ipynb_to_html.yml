@@ -1,27 +1,35 @@
-name: Convert Jupyter Notebooks to HTML
+name: Convert and Publish Notebooks to HTML
 
 on:
   push:
-    branches:
-      - build
+    branches: [ main ]
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v3
+        uses: actions/setup-python@v5
         with:
           python-version: '3.x'
 
       - name: Install dependencies
         run: |
-          pip install nbconvert
+          pip install jupyter nbconvert nbformat
 
       - name: Convert notebooks to HTML
         run: |
-          jupyter nbconvert --to html notebooks/*.ipynb --output-dir notebooks/
+          mkdir -p docs
+          jupyter nbconvert --to html notebooks/*.ipynb --output-dir docs
 
+      - name: Commit generated HTML
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add docs/*.html || echo "No new HTML files"
+          git commit -m "Auto-update HTML from notebooks" || echo "No changes to commit"
+          git push
